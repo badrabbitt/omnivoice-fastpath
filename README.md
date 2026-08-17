@@ -2,7 +2,8 @@
 
 Inference speedups for [OmniVoice](https://github.com/k2-fsa/OmniVoice) TTS, with the
 measurements behind them. 3.9-4.6x faster than the stock Python API on the same
-hardware, at no quality difference we could detect over 48 paired sentences.
+hardware, for something between nothing and about 2.8 WER points — see
+[the caveat](#about-that-quality-claim) before you quote a number.
 
 Half of this repo is negative results. Batching, ONNX fp32, CUDA graphs and CFG
 interval all sound like they should help. None of them do, and the numbers
@@ -34,12 +35,40 @@ Shorter segments benefit more, because the reference and text are a fixed cost p
 call and shrinking them matters more when there is less target audio to amortize
 them over. 3.85x is the conservative figure; quote that one.
 
+## About that quality claim
+
+Each lever was evaluated on its own and each came out as no detectable difference:
+32 -> 12 steps at −0.87 WER points (CI [−2.20, +0.52]), a 6.2s -> 3.2s reference at
+−0.02 (CI [−0.95, +0.92]). Adding those up predicts about −0.9, i.e. slightly
+better.
+
+Measuring the whole stack directly against a clean upstream baseline says
+otherwise:
+
+| Setup | RTF | WER | ΔWER | CI95 | p | Clean sentences |
+|---|---|---|---|---|---|---|
+| Upstream, no wrappers, 32 steps, 6.2s ref | 1.31 | 3.00% | — | — | — | 35/48 |
+| This repo, 12 steps, 3.2s ref | 0.36 | 4.38% | +1.38 | [−0.02, +2.79] | 0.081 | 28/48 |
+
++1.38 where the components predicted −0.9. The confidence interval only just
+touches zero and p is 0.081, so this is not a significant regression, but it is
+nowhere near a demonstration that quality is unchanged.
+
+The real lesson is about the evaluation, not the model. This design resolves
+differences of about 2 WER points; every individual result above is smaller than
+that. Composing several "no detectable difference" measurements into a claim about
+the whole stack was not valid, and doing it directly gave a different answer.
+
+Treat 12 steps and a 3s reference as a small quality trade, not a free lunch, and
+run the evaluation on your own content before shipping it. Trimmed CFG is the one
+part that is genuinely free — it is arithmetically lossless and verified as such.
+
 Where the 4.6x comes from:
 
 | Lever | Speedup | Cost |
 |---|---|---|
-| 32 -> 12 diffusion steps | 2.34x | none we could measure |
-| 6s -> 3s reference clip | 1.37x | none we could measure |
+| 32 -> 12 diffusion steps | 2.34x | see the caveat above |
+| 6s -> 3s reference clip | 1.37x | see the caveat above |
 | Trimmed CFG | 1.18x on MPS, 1.42x on CPU | none, it is arithmetically lossless |
 | `torch.compile` | 1.09x on MPS, 1.42x on CUDA | 10s startup on MPS, 137-218s on CUDA |
 
@@ -135,9 +164,14 @@ faster-whisper large-v3, 95% CI from a paired bootstrap over per-sentence WER.
 | 12 | 0.43 | 2.51% | −0.87 | [−2.20, +0.52] | 0.331 |
 | 8 | 0.32 | 6.45% | **+3.07** | **[+1.04, +5.40]** | **0.009** |
 
-12 steps is indistinguishable from 32 and 2.34x faster. Do not read 2.51% as *better*
-than 32 steps — the interval spans zero, that is noise. At 8 steps WER nearly doubles
-and sentences transcribed perfectly drop from 32/48 to 24/48.
+12 steps is indistinguishable from 32 *in this comparison* and 2.34x faster. Do not
+read 2.51% as *better* than 32 steps — the interval spans zero, that is noise. At 8
+steps WER nearly doubles and sentences transcribed perfectly drop from 32/48 to
+24/48.
+
+Note that measuring 12 steps together with the shorter reference against a clean
+upstream baseline gives +1.38 rather than the −0.9 these component numbers predict.
+See [the caveat](#about-that-quality-claim).
 
 ## Reference length
 

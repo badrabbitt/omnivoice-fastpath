@@ -172,3 +172,20 @@ Prefix share of the sequence, 3.2s reference, 3-4s segments:
 | Total | Target | Prefix | Prefix share |
 |---|---|---|---|
 | 192-200 | 69-78 | 119-123 | 61-64% |
+
+## Whole stack against a clean upstream baseline
+
+The comparison the component evaluations could not substitute for. Upstream
+defaults with no wrappers at all, against everything this repo recommends.
+
+| Config | RTF | Total | WER | ΔWER | CI95 | p | Clean |
+|---|---|---|---|---|---|---|---|
+| Upstream, 32 steps, 6.2s ref | 1.31 | 250.2s | 3.00% | — | — | — | 35/48 |
+| Tuned, 12 steps, 3.2s ref | 0.36 | 65.0s | 4.38% | +1.38 | [−0.02, +2.79] | 0.081 | 28/48 |
+
+SD of the paired difference is 5.00 points, so this design detects about 2.02
+points. The components predicted −0.9 (−0.87 from steps, −0.02 from reference
+length); the direct measurement says +1.38. Both readings are inside the noise
+floor of their own comparisons, which is the point: at this sample size the
+evaluation cannot resolve effects of this size, and stacking separate
+"no detectable difference" results into a claim about the combination was wrong.
