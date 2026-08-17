@@ -102,6 +102,13 @@ where compute is the bottleneck and loses where launch latency is.
 | MPS (fp16) | 1.18x faster |
 | CUDA T4 (fp16) | **0.64x — slower** |
 
+## Samples
+
+[`samples/`](samples/) has the same three sentences at 32, 12 and 8 steps, cloned
+from the same 3.2s reference. Nothing else differs between the files. 32 is the
+OmniVoice default, 12 is what this repo recommends, and 8 is there because the
+numbers say it falls apart — which is easier to hear than to read.
+
 ## Steps
 
 12 is the floor. 8 breaks.

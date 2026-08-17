@@ -8,3 +8,4 @@ onnx/
 *.onnx
 *.onnx.data
 *.wav
+!samples/*.wav
