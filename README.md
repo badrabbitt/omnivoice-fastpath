@@ -1,7 +1,7 @@
 # omnivoice-fastpath
 
 Inference speedups for [OmniVoice](https://github.com/k2-fsa/OmniVoice) TTS, with the
-measurements behind them. 4.6x faster than the stock Python API on the same
+measurements behind them. 3.9-4.6x faster than the stock Python API on the same
 hardware, at no quality difference we could detect over 48 paired sentences.
 
 Half of this repo is negative results. Batching, ONNX fp32, CUDA graphs and CFG
@@ -21,6 +21,18 @@ Apple M2 Max, MPS, fp16, 10 voice-cloning segments of 3-4s each.
 The middle row is the honest baseline: 4.6x. The top row is 8.6x, but a third of
 that gap is just not reloading a 813M-parameter model for every sentence, which
 any serving setup fixes on its own.
+
+The speedup depends on how long your segments are. On the 48-sentence evaluation
+corpus, which mixes short and long sentences, the same comparison gives 3.85x:
+
+| Setup | Total | RTF |
+|---|---|---|
+| Upstream defaults, no wrappers, 32 steps, 6.2s reference | 250.2s | 1.31 |
+| Trimmed CFG + compile + 12 steps + 3.2s reference | 65.0s | 0.36 |
+
+Shorter segments benefit more, because the reference and text are a fixed cost per
+call and shrinking them matters more when there is less target audio to amortize
+them over. 3.85x is the conservative figure; quote that one.
 
 Where the 4.6x comes from:
 
