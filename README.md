@@ -36,16 +36,21 @@ more once the other levers have made each step cheaper.
 
 ## Install
 
+Not on PyPI yet — install from git:
+
 ```bash
-pip install omnivoice omnivoice-fastpath
+pip install git+https://github.com/badrabbitt/omnivoice-fastpath
 ```
 
-Or from source:
+Or clone it, which you want anyway if you plan to run the benchmarks:
 
 ```bash
 git clone https://github.com/badrabbitt/omnivoice-fastpath
-cd omnivoice-fastpath && pip install -e .
+cd omnivoice-fastpath && pip install -e ".[onnx,eval]"
 ```
+
+`omnivoice>=0.2.1` comes in as a dependency. Nothing here needs the OmniVoice
+source tree.
 
 ## Use
 
