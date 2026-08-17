@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "omnivoice-fastpath"
+version = "0.1.0"
+description = "Measured inference speedups for OmniVoice TTS"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dependencies = ["torch>=2.4", "omnivoice>=0.2.1"]
+
+[project.optional-dependencies]
+onnx = ["onnxruntime", "onnx", "onnxscript"]
+eval = ["faster-whisper", "soundfile"]
+
+[project.urls]
+Repository = "https://github.com/badrabbitt/omnivoice-fastpath"
+
+[tool.hatch.build.targets.wheel]
+packages = ["omnivoice_fastpath"]

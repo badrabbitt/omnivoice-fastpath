@@ -1,0 +1,9 @@
+omnivoice-fastpath
+Copyright 2026 the omnivoice-fastpath authors
+
+Licensed under the Apache License, Version 2.0.
+
+This project is an add-on for OmniVoice (https://github.com/k2-fsa/OmniVoice),
+which is also Apache-2.0 licensed. It does not redistribute OmniVoice source or
+model weights; it wraps the published API at runtime. Measurements in RESULTS.md
+were taken against OmniVoice 0.2.1 (commit 38e992b).
